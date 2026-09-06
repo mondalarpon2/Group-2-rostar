@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Group-2 Smart Duty Roster</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 0; overflow-x: hidden; }
+  
+  /* --- Strict Login Screen --- */
+  #loginScreen {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #2c3e50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999; /* সবার উপরে থাকবে */
+  }
+  .login-box {
+    background: white; padding: 30px; border-radius: 12px;
+    width: 90%; max-width: 400px; text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  .login-box h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+  .login-form { display: flex; flex-direction: column; gap: 15px; }
+  .login-form input { padding: 12px; font-size: 1em; border: 1px solid #ccc; border-radius: 6px; outline: none; transition: 0.3s; }
+  .login-form input:focus { border-color: #4CAF50; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3); }
+  .login-form button { padding: 12px; font-size: 1.1em; background: #4CAF50; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+  .login-form button:hover { background: #388E3C; }
+  .login-error { color: #F44336; font-size: 0.9em; font-weight: bold; display: none; margin-top: -5px; }
+
+  /* --- Main Application Container (Hidden by default) --- */
+  #mainApp { display: none; padding: 15px; }
+
+  h1 { text-align: center; color: #111; margin-bottom: 15px; font-size: 1.8em; }
+  
+  .page-nav { max-width: 1400px; margin: 0 auto 16px auto; padding: 10px 12px; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
+  .nav-btn { padding: 6px 12px; border-radius: 6px; background: #2c3e50; color: #fff; text-decoration: none; font-weight: bold; font-size: 0.9em; cursor: pointer; border: none; }
+  .nav-btn.active { background: #1a1a1a; }
+  .nav-btn.logout-btn { background: #F44336; margin-left: auto; }
+  .user-email-display { font-size: 0.9em; font-weight: bold; color: #2c3e50; margin-left: auto; }
+
+  .selectors { text-align: center; margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+  select { padding: 8px 12px; font-size: 1.05em; border-radius: 8px; border: 2px solid #2c3e50; font-weight: bold; cursor: pointer; background-color: #fff; color: #2c3e50; outline: none; min-width: 120px; }
+
+  .today-banner { background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; width: 100%; max-width: 600px; margin: 0 auto 20px auto; border-top: 5px solid #2c3e50; cursor: pointer; transition: 0.2s; }
+  .today-banner:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.12); }
+  .today-shift, .today-point { font-size: 1.1em; font-weight: bold; padding: 6px 14px; border-radius: 6px; color: white; display: inline-block; margin-top: 8px; margin-right: 5px; }
+  .today-point { background-color: #2c3e50; margin-right: 0; }
+
+  .filters { text-align: center; margin-bottom: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .filter-btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; font-size: 0.9em; transition: 0.2s; }
+  .filter-btn:hover { opacity: 0.85; transform: scale(1.02); }
+  .btn-all { background-color: #444; } .btn-mor { background-color: #4CAF50; } .btn-eve { background-color: #FF9800; } .btn-night { background-color: #2196F3; } .btn-off { background-color: #F44336; } .btn-spr { background-color: #9C27B0; }
+
+  .calendar-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 15px; width: 100%; max-width: 1400px; margin: 0 auto; }
+  .month { background: white; padding: 12px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); width: 100%; overflow: hidden; }
+  .month h2 { text-align: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 8px; margin-top: 0; font-size: 1.2em; color: #2c3e50; }
+  .days-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; text-align: center; width: 100%; }
+  .day-header { font-weight: bold; padding: 4px 0; color: #555; font-size: 0.8em; text-transform: uppercase; }
+  .day { padding: 4px 1px; border-radius: 6px; background-color: #f9fbfd; border: 1px solid #e1e5e8; display: flex; flex-direction: column; align-items: center; min-height: 65px; cursor: pointer; width: 100%; overflow: hidden; transition: 0.2s; }
+  .day:hover:not(.empty) { background-color: #eef2f5; transform: scale(1.03); z-index: 2; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  .day.today-highlight { border: 2px solid #2c3e50; background-color: #f0f8ff; font-weight: bold; }
+  .day.dimmed { opacity: 0.15; pointer-events: none; }
+  .date { font-size: 1em; font-weight: bold; margin-bottom: 3px; color: #111; }
+  
+  .shift-tag, .point-tag { font-size: 0.65em; font-weight: bold; width: 96%; border-radius: 4px; padding: 3px 0; margin-bottom: 2px; text-transform: uppercase; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; }
+  .shift-Mor { background-color: #4CAF50; } .shift-Eve { background-color: #FF9800; } .shift-Night { background-color: #2196F3; } .shift-off { background-color: #F44336; } .shift-spr { background-color: #9C27B0; } .shift-Leave { background-color: #E91E63; }
+  
+  .point-tag { font-size: 0.7em; color: #333; background-color: #e0f7fa; border: 1px solid #00bcd4; }
+  .point-tag[data-type="ot"] { background-color: #fff3e0; border-color: #FF9800; color: #e65100; }
+
+  .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
+  .modal-content { background-color: white; margin: 5% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+  .close-modal { position: absolute; right: 15px; top: 10px; font-size: 28px; font-weight: bold; cursor: pointer; color: #555; transition: 0.2s; }
+  .close-modal:hover { color: #f44336; }
+  .modal-title { font-size: 1.3em; font-weight: bold; margin-bottom: 15px; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #2c3e50; }
+  
+  .roster-list { width: 100%; border-collapse: collapse; font-size: 1em; }
+  .roster-list th, .roster-list td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+  .roster-list th { background: #f4f6f9; font-weight: bold; color: #555; }
+  .roster-list tr:last-child td { border-bottom: none; }
+  .roster-list tr:hover { background-color: #f9f9f9; }
+
+  .update-form { margin-top: 15px; padding-top: 15px; border-top: 2px dashed #ccc; display: none; flex-direction: column; gap: 10px; }
+  .update-form h4 { margin: 0; color: #2c3e50; text-align: center; }
+  .update-form select, .update-form button { padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 1em; outline: none; }
+  .update-form button { background: #2196F3; color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
+  .update-form button:hover { background: #1976D2; }
+  .empty { border: none; background: transparent; cursor: default; }
+  .empty:hover { background-color: transparent !important; transform: none !important; box-shadow: none !important; }
+
+  @media (max-width: 480px) {
+    .calendar-container { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    #mainApp { padding: 8px; }
+    h1 { font-size: 1.4em; }
+    .page-nav { padding: 8px; gap: 5px; }
+    .nav-btn { font-size: 0.8em; padding: 5px 8px; }
+    .user-email-display { font-size: 0.75em; margin-left: 0; width: 100%; text-align: center; margin-top: 5px; }
+    .nav-btn.logout-btn { margin-left: 0; flex-grow: 1; text-align: center; }
+    .selectors { gap: 8px; }
+    select { padding: 6px 10px; font-size: 0.9em; width: 45%; min-width: auto; }
+    .today-banner { padding: 12px; }
+    .today-shift, .today-point { font-size: 1em; padding: 5px 10px; }
+    .filter-btn { font-size: 0.8em; padding: 6px 5px; flex: 1 1 calc(33% - 10px); }
+    .month { padding: 8px; }
+    .days-grid { gap: 2px; }
+    .day { min-height: 55px; padding: 3px 1px; }
+    .day:hover:not(.empty) { transform: none; box-shadow: none; } 
+    .date { font-size: 0.85em; }
+    .shift-tag, .point-tag { font-size: 0.55em; padding: 2px 0; }
+    .modal-content { margin: 15% auto; width: 95%; padding: 15px; }
+    .modal-title { font-size: 1.1em; }
+    .roster-list th, .roster-list td { padding: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Strict Login Screen -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h2>Secure Login</h2>
+    <div class="login-form">
+      <input type="email" id="emailInput" placeholder="Enter Email" required>
+      <input type="password" id="passwordInput" placeholder="Enter Password" required>
+      <div id="loginErrorMsg" class="login-error">Invalid Email or Password!</div>
+      <button onclick="loginUser()" id="loginActionBtn">Login to Roster</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main Application (Hidden by default) -->
+<div id="mainApp">
+  <nav class="page-nav">
+    <a href="index.html" class="nav-btn">Home</a>
+    <a href="all-groups.html" class="nav-btn">All Groups</a>
+    <a href="group2-2026.html" class="nav-btn active">Group-2 &middot; 2026</a>
+    <span id="userEmailDisplay" class="user-email-display"></span>
+    <button id="logoutBtn" class="nav-btn logout-btn" onclick="logoutUser()">Logout</button>
+  </nav>
+
+  <h1>Group-2 Smart Duty Roster</h1>
+
+  <div class="selectors">
+    <select id="userSelect" onchange="updateView()"></select>
+    <select id="yearSelect" onchange="updateView()"></select>
+  </div>
+
+  <div class="today-banner" id="todayBanner" onclick="openTodayModal()"></div>
+
+  <div class="filters">
+    <button class="filter-btn btn-all" onclick="filterData('all')">Sab Dekhun</button>
+    <button class="filter-btn btn-mor" onclick="filterData('Mor')">Morning</button>
+    <button class="filter-btn btn-eve" onclick="filterData('Eve')">Evening</button>
+    <button class="filter-btn btn-night" onclick="filterData('Night')">Night</button>
+    <button class="filter-btn btn-off" onclick="filterData('off')">Off Days</button>
+    <button class="filter-btn btn-spr" onclick="filterData('spr')">Spare</button>
+  </div>
+
+  <div class="calendar-container" id="calendar"></div>
+</div>
+
+<!-- Roster Modal -->
+<div id="rosterModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeRosterModal()">&times;</span>
+    <div id="modalTitle" class="modal-title"></div>
+    <table class="roster-list">
+      <thead><tr><th>Name</th><th>Duty Point</th></tr></thead>
+      <tbody id="modalBody"></tbody>
+    </table>
+    
+    <div id="updateForm" class="update-form">
+      <h4>Update OT / Leave</h4>
+      <select id="editUserSelect"></select>
+      <select id="editTypeSelect" onchange="togglePointSelect()">
+        <option value="OT">Add Overtime (OT)</option>
+        <option value="Leave">Mark as Leave</option>
+        <option value="Reset">Reset to Default</option>
+      </select>
+      <select id="editPointSelect">
+        <option value="bk1">BK1</option><option value="cr1">CR1</option><option value="bk2">BK2</option>
+        <option value="pd1">PD1</option><option value="tp4">TP4</option><option value="pd2">PD2</option>
+        <option value="cr2">CR2</option><option value="tp1">TP1</option><option value="tp2">TP2</option>
+        <option value="4bk">4BK</option>
+      </select>
+      <button onclick="saveDutyUpdate()" id="saveBtn">Save Update</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, onSnapshot, collection, deleteField } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAa8FwVuIACtZBROcZMHQDtfkOwNjaRmgE",
+    authDomain: "wbpdcl-group-3-rostar.firebaseapp.com",
+    projectId: "wbpdcl-group-3-rostar",
+    storageBucket: "wbpdcl-group-3-rostar.firebasestorage.app",
+    messagingSenderId: "433240836745",
+    appId: "1:433240836745:web:be12024e61e6f674bb5458"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const ADMIN_EMAILS = ["arpon@roster.com"]; 
+  let currentUser = null;
+  let customData = {}; 
+  let isAppInitialized = false; // লগইনের আগে রেন্ডার আটকাতে
+
+  const USER_MAPPING = {
+    "sanjoy@roster.com": "Sanjoy-5339",
+    "prithviraj@roster.com": "Prithviraj-5515",
+    "kolimuddin@roster.com": "Kolimuddin",
+    "sourav@roster.com": "Sourav-10803",
+    "rana@roster.com": "Rana-10801",
+    "pratap@roster.com": "Pratap-10731",
+    "sudeep@roster.com": "Sudeep-10732",
+    "souvik@roster.com": "souvik-10734",
+    "pritam@roster.com": "Pritam-10736",
+    "sagar@roster.com": "Sagar-10742",
+    "rahul@roster.com": "Rahul-10748",
+    "arpon@roster.com": "Arpon-10758",
+    "bhaskar@roster.com": "Bhaskar-10805",
+    "satya@roster.com": "Satya-10815"
+  };
+
+  // --- Strict Auth Listener ---
+  onAuthStateChanged(auth, (user) => {
+    const loginScreen = document.getElementById('loginScreen');
+    const mainApp = document.getElementById('mainApp');
+    const emailDisplay = document.getElementById('userEmailDisplay');
+    
+    if (user) {
+      // লগইন সফল হলে মেইন অ্যাপ দেখাবে
+      currentUser = user;
+      loginScreen.style.display = 'none';
+      mainApp.style.display = 'block';
+      emailDisplay.textContent = user.email;
+      
+      // শুধুমাত্র লগইন কনফার্ম হলেই ক্যালেন্ডার তৈরি শুরু হবে
+      if(!isAppInitialized) {
+        initializeAppUI();
+        isAppInitialized = true;
+      }
+    } else {
+      // লগআউট থাকলে বা লগইন না হলে শুধু লগইন পেজ দেখাবে
+      currentUser = null;
+      loginScreen.style.display = 'flex';
+      mainApp.style.display = 'none';
+      document.getElementById('calendar').innerHTML = ''; // সিকিউরিটির জন্য ক্যালেন্ডার ক্লিয়ার করে দেওয়া
+      isAppInitialized = false;
+    }
+  });
+
+  window.loginUser = () => {
+    const e = document.getElementById('emailInput').value;
+    const p = document.getElementById('passwordInput').value;
+    const err = document.getElementById('loginErrorMsg');
+    const btn = document.getElementById('loginActionBtn');
+    
+    if(!e || !p) return;
+    btn.innerText = "Checking...";
+    signInWithEmailAndPassword(auth, e, p).then(() => {
+       btn.innerText = "Login to Roster";
+       err.style.display = 'none';
+    }).catch(error => { 
+       btn.innerText = "Login to Roster";
+       err.style.display = 'block'; 
+       err.textContent = "Wrong Email or Password!"; 
+    });
+  }
+  
+  window.logoutUser = () => signOut(auth);
+
+  // --- Database Listener ---
+  onSnapshot(collection(db, "daily_updates"), (snapshot) => {
+    customData = {};
+    snapshot.forEach((docSnap) => { customData[docSnap.id] = docSnap.data(); });
+    // যদি লগইন করা থাকে, তবেই আপডেট দেখাবে
+    if(currentUser && isAppInitialized) window.updateView();
+  });
+
+  const usersData = [
+    { name: "Sanjoy-5339", offset: 0 }, { name: "Prithviraj-5515", offset: 1 }, { name: "Kolimuddin", offset: 2 },
+    { name: "Sourav-10803", offset: 3 }, { name: "Rana-10801", offset: 4 }, { name: "Pratap-10731", offset: 5 },
+    { name: "Sudeep-10732", offset: 6 }, { name: "souvik-10734", offset: 7 }, { name: "Pritam-10736", offset: 8 },
+    { name: "Sagar-10742", offset: 9 }, { name: "Rahul-10748", offset: 10 }, { name: "Arpon-10758", offset: 11 },
+    { name: "Bhaskar-10805", offset: 12 }, { name: "Satya-10815", offset: 13 }
+  ];
+
+  const shiftCycle = ['Mor', 'Mor', 'Mor', 'Eve', 'Eve', 'Night', 'Night', 'off', 'off', 'spr', 'Mor', 'Mor', 'Eve', 'Eve', 'Night', 'Night', 'Night', 'off', 'off', 'Mor', 'Mor', 'Eve', 'Eve', 'Eve', 'Night', 'Night', 'off', 'off'];
+  const pointCycle = ['bk1', 'cr1', 'bk2', 'pd1', 'tp4', 'pd2', 'cr2', 'bk1', 'tp1', 'bk2', 'pd1', 'tp2', 'pd2', '4bk'];
+  const shiftRefDate = new Date(2026, 0, 3); const pointRefDate = new Date(2026, 5, 11); 
+  const minYear = 2024; const maxYear = 2060;
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  let todayDateForModal = new Date();
+
+  // --- Initializing App UI (Only runs after login) ---
+  function initializeAppUI() {
+    const userSelect = document.getElementById("userSelect");
+    const editUserSelect = document.getElementById("editUserSelect");
+    
+    // Clear previous options to prevent duplicates if relogged
+    userSelect.innerHTML = ''; 
+    editUserSelect.innerHTML = '';
+
+    // Auto-select user based on login email (Mapping)
+    let autoSelectIndex = 11; // Default to Arpon (index 11)
+    if(USER_MAPPING[currentUser.email]) {
+       let mappedName = USER_MAPPING[currentUser.email];
+       autoSelectIndex = usersData.findIndex(u => u.name === mappedName);
+       if(autoSelectIndex === -1) autoSelectIndex = 11;
+    }
+
+    usersData.forEach((user, index) => {
+      let option = new Option(user.name, index);
+      if(index === autoSelectIndex) option.selected = true; 
+      userSelect.appendChild(option);
+      editUserSelect.appendChild(new Option(user.name, user.name));
+    });
+
+    const yearSelect = document.getElementById("yearSelect");
+    if(yearSelect.options.length === 0) {
+      for(let y = minYear; y <= maxYear; y++) { let opt = new Option(y, y); if(y===new Date().getFullYear() || y===2026) opt.selected=true; yearSelect.appendChild(opt); }
+    }
+    
+    window.updateView();
+  }
+
+  window.updateView = function() {
+    if(!currentUser) return; // সিকিউরিটি চেক
+    renderCalendar(document.getElementById("userSelect").value, parseInt(document.getElementById("yearSelect").value));
+  }
+
+  function getShiftForDate(date) {
+    let d1 = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    let d2 = new Date(shiftRefDate.getFullYear(), shiftRefDate.getMonth(), shiftRefDate.getDate());
+    let diffDays = Math.round((d1.getTime() - d2.getTime()) / (1000*3600*24));
+    let sIdx = diffDays % 28; if(sIdx < 0) sIdx += 28;
+    return shiftCycle[sIdx];
+  }
+
+  function getBasePointForUser(date, userOffset) {
+    let shift = getShiftForDate(date);
+    if(shift === 'off' || shift === 'spr') return null;
+
+    let targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    let refDate = new Date(pointRefDate.getFullYear(), pointRefDate.getMonth(), pointRefDate.getDate());
+    let cycleLen = pointCycle.length; 
+    let workingDaysCount = 0;
+
+    if (targetDate >= refDate) {
+      let cur = new Date(refDate);
+      while(cur < targetDate) {
+        let s = getShiftForDate(cur);
+        if(s !== 'off' && s !== 'spr') workingDaysCount++;
+        cur.setDate(cur.getDate() + 1);
+      }
+    } else {
+      let cur = new Date(refDate);
+      cur.setDate(cur.getDate() - 1);
+      while(cur >= targetDate) {
+        let s = getShiftForDate(cur);
+        if(s !== 'off' && s !== 'spr') workingDaysCount++;
+        cur.setDate(cur.getDate() - 1);
+      }
+      workingDaysCount = -workingDaysCount;
+    }
+
+    let offsetJump = Math.floor(workingDaysCount / 14);
+    let pointIndex = (userOffset + workingDaysCount + offsetJump) % cycleLen;
+    if (pointIndex < 0) { pointIndex = (pointIndex % cycleLen + cycleLen) % cycleLen; }
+    
+    return pointCycle[pointIndex];
+  }
+
+  function getActualStatus(date, userName, baseShift, basePoint) {
+    const dateKey = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+    if(customData[dateKey] && customData[dateKey][userName]) {
+      const override = customData[dateKey][userName];
+      if(override.type === 'Leave') return { shift: baseShift, point: basePoint, customType: 'Leave' };
+      if(override.type === 'OT') return { shift: baseShift, point: basePoint, otPoint: override.point, customType: 'OT' };
+    }
+    return { shift: baseShift, point: basePoint, customType: null };
+  }
+
+  function renderCalendar(userIndex, selectedYear) {
+    const container = document.getElementById('calendar'); container.innerHTML = '';
+    const today = new Date(); const user = usersData[userIndex];
+
+    const currentBaseShift = getShiftForDate(today);
+    const currentBasePoint = getBasePointForUser(today, user.offset);
+    const actualToday = getActualStatus(today, user.name, currentBaseShift, currentBasePoint);
+    
+    let extraOTPoint = actualToday.customType === 'OT' ? actualToday.otPoint : null;
+    updateBanner(today, user.name, actualToday.shift, actualToday.point, actualToday.customType, extraOTPoint);
+    todayDateForModal = today;
+
+    for (let month = 0; month < 12; month++) {
+      const monthDiv = document.createElement('div'); monthDiv.className = 'month'; monthDiv.innerHTML = `<h2>${months[month]}</h2>`;
+      const grid = document.createElement('div'); grid.className = 'days-grid';
+      days.forEach(d => { const div = document.createElement('div'); div.className = 'day-header'; div.textContent = d; grid.appendChild(div); });
+
+      const firstDay = new Date(selectedYear, month, 1).getDay();
+      const daysInMonth = new Date(selectedYear, month + 1, 0).getDate();
+      for (let i = 0; i < firstDay; i++) { grid.appendChild(document.createElement('div')).className = 'day empty'; }
+
+      for (let date = 1; date <= daysInMonth; date++) {
+        let curDate = new Date(selectedYear, month, date);
+        let baseShift = getShiftForDate(curDate);
+        let basePoint = getBasePointForUser(curDate, user.offset);
+        let actual = getActualStatus(curDate, user.name, baseShift, basePoint);
+
+        const dayDiv = document.createElement('div'); dayDiv.className = 'day';
+        dayDiv.setAttribute('data-shift', actual.shift);
+        dayDiv.onclick = () => window.openRosterModal(curDate, baseShift);
+
+        if (today.getFullYear() === selectedYear && today.getMonth() === month && today.getDate() === date) {
+          dayDiv.classList.add('today-highlight');
+        }
+
+        let sName = actual.shift === 'Mor' ? 'Morning' : actual.shift === 'Eve' ? 'Evening' : actual.shift === 'spr' ? 'Spare' : actual.shift;
+        
+        dayDiv.innerHTML = `<span class="date">${date}</span><span class="shift-tag shift-${actual.shift}">${sName}</span>`;
+        if(actual.customType === 'Leave') dayDiv.innerHTML += `<span class="shift-tag shift-Leave" style="margin-top:-2px; padding: 2px 0;">LEAVE</span>`;
+        if(actual.point) dayDiv.innerHTML += `<span class="point-tag" data-type="default">${actual.point.toUpperCase()}</span>`;
+        if(actual.customType === 'OT') dayDiv.innerHTML += `<span class="point-tag" data-type="ot">${actual.otPoint.toUpperCase()} (OT)</span>`;
+        
+        grid.appendChild(dayDiv);
+      }
+      monthDiv.appendChild(grid); container.appendChild(monthDiv);
+    }
+  }
+
+  function updateBanner(date, name, shift, point, customType, otPoint) {
+    let sName = shift === 'Mor' ? 'Morning' : shift === 'Eve' ? 'Evening' : shift === 'Night' ? 'Night' : shift === 'off' ? 'Off Day' : 'Spare';
+    let extraTag = '';
+    if(customType === 'Leave') extraTag = `<span class="shift-tag shift-Leave" style="display:inline-block; margin-left:5px; padding:2px 8px; width:auto;">LEAVE</span>`;
+    if(customType === 'OT' && otPoint) extraTag = `<span class="point-tag" data-type="ot" style="display:inline-block; margin-left:5px; padding:2px 8px; width:auto;">${otPoint.toUpperCase()} (OT)</span>`;
+    document.getElementById('todayBanner').innerHTML = `<span>Aj <b>${date.getDate()} ${months[date.getMonth()]}</b>. ${name}-er Duty: (Click)</span><br><span class="today-shift shift-${shift}">${sName}</span><span class="today-point">${point ? point.toUpperCase() : 'No Point'}</span>${extraTag}`;
+  }
+
+  window.openTodayModal = () => { if(currentUser) window.openRosterModal(todayDateForModal, getShiftForDate(todayDateForModal)); }
+  window.togglePointSelect = () => { document.getElementById('editPointSelect').style.display = document.getElementById('editTypeSelect').value === 'OT' ? 'inline-block' : 'none'; }
+
+  window.openRosterModal = function(date, shift) {
+    if(!currentUser) return;
+    todayDateForModal = date;
+    const title = document.getElementById('modalTitle'), body = document.getElementById('modalBody');
+    let sName = shift === 'Mor' ? 'Morning' : shift === 'Eve' ? 'Evening' : shift === 'Night' ? 'Night' : shift === 'off' ? 'Off Day' : 'Spare';
+    title.innerHTML = `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()} (${sName})`;
+    body.innerHTML = '';
+
+    usersData.forEach(user => {
+      let bPoint = getBasePointForUser(date, user.offset);
+      let actual = getActualStatus(date, user.name, shift, bPoint);
+      
+      let originalPointHtml = actual.point ? `<span class="point-tag" style="padding:2px 6px; display:inline-block; width:auto;" data-type="default">${actual.point.toUpperCase()}</span>` : '';
+      let pointHtml = '';
+      
+      if(actual.customType === 'Leave') {
+         pointHtml = originalPointHtml + ` <span class="shift-tag shift-Leave" style="padding:2px 6px; display:inline-block; width:auto; margin:0;">LEAVE</span>`;
+      } else if (actual.customType === 'OT') {
+         pointHtml = originalPointHtml + ` <span class="point-tag" style="padding:2px 6px; display:inline-block; width:auto; margin-left:4px;" data-type="ot">${actual.otPoint.toUpperCase()} (OT)</span>`;
+      } else {
+         pointHtml = actual.point ? originalPointHtml : '<span style="color:#999; font-weight:bold;">N/A</span>';
+      }
+      
+      body.innerHTML += `<tr><td><b>${user.name}</b></td><td>${pointHtml}</td></tr>`;
+    });
+
+    const form = document.getElementById('updateForm');
+    form.style.display = 'flex';
+    document.getElementById('saveBtn').innerText = "Save Update";
+    
+    if(ADMIN_EMAILS.includes(currentUser.email)) {
+       editUserSelect.disabled = false;
+    } else {
+       const mappedName = USER_MAPPING[currentUser.email];
+       if(mappedName) {
+         editUserSelect.value = mappedName;
+         editUserSelect.disabled = true;
+       }
+    }
+    document.getElementById('rosterModal').style.display = "block";
+  }
+
+  window.saveDutyUpdate = async function() {
+    const btn = document.getElementById('saveBtn');
+    btn.innerText = "Saving...";
+    const uName = document.getElementById('editUserSelect').value;
+    const type = document.getElementById('editTypeSelect').value;
+    const point = document.getElementById('editPointSelect').value;
+    const dateKey = `${todayDateForModal.getFullYear()}-${todayDateForModal.getMonth()+1}-${todayDateForModal.getDate()}`;
+    const docRef = doc(db, "daily_updates", dateKey);
+
+    try {
+      if(type === 'Reset') {
+        await setDoc(docRef, { [uName]: deleteField() }, { merge: true });
+      } else {
+        await setDoc(docRef, { [uName]: { type: type, point: type === 'OT' ? point : null, updatedBy: currentUser.email } }, { merge: true });
+      }
+      btn.innerText = "Saved!";
+      setTimeout(() => window.closeRosterModal(), 1000);
+    } catch(e) {
+      alert("Error: " + e.message);
+      btn.innerText = "Save Update";
+    }
+  }
+
+  window.closeRosterModal = () => document.getElementById('rosterModal').style.display = "none";
+  window.onclick = (e) => { if (e.target == document.getElementById('rosterModal')) window.closeRosterModal(); }
+  
+  window.filterData = function(v) {
+    document.querySelectorAll('.day[data-shift]').forEach(d => {
+      d.classList.remove('dimmed');
+      if (v !== 'all' && d.getAttribute('data-shift') !== v && !(v==='Leave' && d.innerHTML.includes('LEAVE'))) d.classList.add('dimmed');
+    });
+  }
+</script>
+</body>
+</html>
