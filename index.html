@@ -198,19 +198,20 @@
   import { getFirestore, doc, setDoc, onSnapshot, collection, deleteField } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyAa8FwVuIACtZBROcZMHQDtfkOwNjaRmgE",
-    authDomain: "wbpdcl-group-3-rostar.firebaseapp.com",
-    projectId: "wbpdcl-group-3-rostar",
-    storageBucket: "wbpdcl-group-3-rostar.firebasestorage.app",
-    messagingSenderId: "433240836745",
-    appId: "1:433240836745:web:be12024e61e6f674bb5458"
-  };
+  apiKey: "AIzaSyDLMx-d0NrIwuBgxvJiA-m8y9t7LBZibtg",
+  authDomain: "wbpdcl-chp.firebaseapp.com",
+  projectId: "wbpdcl-chp",
+  storageBucket: "wbpdcl-chp.firebasestorage.app",
+  messagingSenderId: "305922970752",
+  appId: "1:305922970752:web:23e4569c1851e3169f0265",
+  measurementId: "G-7TYL4DB02P"
+};
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  const ADMIN_EMAILS = ["arpon@roster.com"]; 
+  const ADMIN_EMAILS = ["mondalarpon2.com"]; 
   let currentUser = null;
   let customData = {}; 
   let isAppInitialized = false; // লগইনের আগে রেন্ডার আটকাতে
