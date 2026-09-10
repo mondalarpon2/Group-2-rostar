@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Duty Roster - Arpon</title>
+<style>
+  /* --- General Styling --- */
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background-color: #f4f6f9; 
+    padding: 20px; 
+    margin: 0;
+    color: #333;
+  }
+  
+  .header-container {
+    text-align: center;
+    margin-bottom: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  h1 { 
+    color: #1a1a1a; 
+    margin: 0;
+    font-size: 2em;
+  }
+
+  .selectors select {
+    font-size: 1.1em;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 2px solid #1a1a1a;
+    background-color: #fff;
+    color: #1a1a1a;
+    cursor: pointer;
+    outline: none;
+    margin: 0 5px;
+  }
+  
+  /* --- Today's Duty Banner --- */
+  .today-banner {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+    border-top: 4px solid #1a1a1a;
+  }
+  
+  .today-banner .date-text {
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 10px;
+    display: block;
+  }
+  
+  .today-banner .shift-text {
+    font-size: 1.3em;
+    font-weight: bold;
+    padding: 8px 20px;
+    border-radius: 6px;
+    color: white;
+    display: inline-block;
+    margin-top: 10px;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  /* --- Filter Buttons --- */
+  .filters {
+    text-align: center;
+    margin-bottom: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .filter-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    font-size: 0.9em;
+    transition: opacity 0.3s, transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-grow: 1;
+    max-width: 150px;
+  }
+  
+  .filter-btn:hover { opacity: 0.85; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+  .filter-btn:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  
+  /* Filter colors */
+  .btn-all { background-color: #444; }
+  .btn-Mor { background-color: #4CAF50; }
+  .btn-Eve { background-color: #FF9800; }
+  .btn-Night { background-color: #2196F3; }
+  .btn-off { background-color: #F44336; }
+  .btn-spr { background-color: #9C27B0; }
+  .btn-ccl { background-color: #E91E63; }
+  
+  /* --- Calendar Grid --- */
+  .calendar-container { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+    gap: 25px; 
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+  
+  .month { 
+    background: #ffffff; 
+    padding: 20px; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
+    border: 1px solid #eee;
+  }
+  
+  .month h2 { 
+    text-align: center; 
+    margin-top: 0; 
+    color: #1a1a1a; 
+    font-size: 1.5em;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+  }
+  
+  .days-grid { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); 
+    gap: 6px; 
+    text-align: center; 
+  }
+  
+  .day-header { 
+    font-weight: bold; 
+    color: #555;
+    padding: 8px 0; 
+    font-size: 0.9em;
+    text-transform: uppercase;
+  }
+  
+  .day { 
+    padding: 8px 2px; 
+    border-radius: 8px; 
+    background-color: #f9f9f9;
+    border: 1px solid #e8e8e8; 
+    min-height: 70px;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    align-items: center;
+    transition: opacity 0.3s, background-color 0.3s, transform 0.2s;
+    position: relative;
+    box-sizing: border-box;
+  }
+  
+  .day.holiday-ccl {
+    border: 2px solid #E91E63;
+    background-color: #fff0f5; 
+  }
+  
+  @media (min-width: 768px) {
+    .day:hover:not(.empty) {
+      transform: translateY(-3px);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+      z-index: 2;
+    }
+  }
+
+  .day.dimmed {
+    opacity: 0.1;
+    pointer-events: none; 
+  }
+  
+  .day.today-highlight {
+    border: 3px solid #1a1a1a;
+    background-color: #fffde7;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    z-index: 3;
+  }
+  
+  .date { 
+    font-weight: bold; 
+    font-size: 1.1em;
+    color: #111;
+    margin-bottom: 4px;
+  }
+  
+  .ccl-tag {
+    font-size: 0.65em;
+    font-weight: bold;
+    background: #E91E63;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+    display: block;
+    width: auto;
+  }
+  
+  .shift { 
+    font-size: 0.8em; 
+    font-weight: bold;
+    padding: 4px 0; 
+    border-radius: 4px; 
+    color: white; 
+    width: 90%; 
+    box-sizing: border-box;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+  
+  .shift-Mor { background-color: #4CAF50; } 
+  .shift-Eve { background-color: #FF9800; } 
+  .shift-Night { background-color: #2196F3; } 
+  .shift-off { background-color: #F44336; } 
+  .shift-spr { background-color: #9C27B0; } 
+  
+  .empty { border: none; background: transparent; }
+  
+  /* --- Mobile Responsive --- */
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    .header-container { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+    h1 { font-size: 1.5em; }
+    .selectors select { font-size: 1em; padding: 5px 8px; }
+    .today-banner { padding: 15px; margin-bottom: 20px; }
+    .today-banner .date-text { font-size: 0.95em; }
+    .today-banner .shift-text { font-size: 1.1em; padding: 6px 15px; margin-top: 5px; }
+    .filters { gap: 6px; margin-bottom: 20px; padding: 0 5px; }
+    .filter-btn { padding: 8px 10px; font-size: 0.8em; min-width: 30%; }
+    .calendar-container { grid-template-columns: 1fr; gap: 15px; }
+    .month { padding: 10px; }
+    .month h2 { font-size: 1.3em; padding-bottom: 8px; margin-bottom: 10px; }
+    .days-grid { gap: 3px; }
+    .day-header { font-size: 0.75em; padding: 5px 0; }
+    .day { padding: 5px 1px; min-height: 60px; }
+    .date { font-size: 1em; margin-bottom: 2px; }
+    .ccl-tag { font-size: 0.6em; padding: 1px 3px; margin-bottom: 2px; }
+    .shift { font-size: 0.7em; padding: 3px 0; width: 95%; }
+    .day.today-highlight { transform: none; box-shadow: none; border-width: 2px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="page-nav" style="max-width:1300px;margin:0 auto 16px auto;padding:10px 12px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.06);display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+  <a href="index.html" style="padding:6px 12px;border-radius:6px;background:#2c3e50;color:#fff;text-decoration:none;font-weight:bold;font-size:0.9em;">Home</a>
+  <a href="all-groups.html" aria-current="page" style="padding:6px 12px;border-radius:6px;background:#1a1a1a;color:#fff;text-decoration:none;font-weight:bold;font-size:0.9em;">All Groups</a>
+  <a href="group2-2026.html" style="padding:6px 12px;border-radius:6px;background:#2c3e50;color:#fff;text-decoration:none;font-weight:bold;font-size:0.9em;">Group-2 &middot; 2026</a>
+</nav>
+
+<div class="header-container">
+  <h1>আমার ডিউটি রোস্টার</h1>
+  <div class="selectors">
+    <select id="groupSelect" onchange="generateCalendar()">
+      <option value="1">Group-1</option>
+      <option value="2" selected>Group-2</option>
+      <option value="3">Group-3</option>
+      <option value="4">Group-4</option>
+    </select>
+    <select id="yearSelect" onchange="generateCalendar()"></select>
+  </div>
+</div>
+
+<div class="today-banner" id="todayBanner"></div>
+
+<div class="filters">
+  <button class="filter-btn btn-all" onclick="filterShifts('all')">সব দেখুন</button>
+  <button class="filter-btn btn-Mor" onclick="filterShifts('Mor')">Morning</button>
+  <button class="filter-btn btn-Eve" onclick="filterShifts('Eve')">Evening</button>
+  <button class="filter-btn btn-Night" onclick="filterShifts('Night')">Night</button>
+  <button class="filter-btn btn-off" onclick="filterShifts('off')">Off Days</button>
+  <button class="filter-btn btn-spr" onclick="filterShifts('spr')">Spare</button>
+  <button class="filter-btn btn-ccl" onclick="filterShifts('ccl')">Fixed Holidays (CCL)</button>
+</div>
+
+<div class="calendar-container" id="calendar"></div>
+
+<script>
+  // ২৮ দিনের সাইকেল
+  const cycle = [
+    'Mor', 'Mor', 'Mor', 
+    'Eve', 'Eve', 
+    'Night', 'Night', 
+    'off', 'off',
+    'spr', 
+    'Mor', 'Mor', 
+    'Eve', 'Eve', 
+    'Night', 'Night', 'Night', 
+    'off', 'off',
+    'Mor', 'Mor', 
+    'Eve', 'Eve', 'Eve', 
+    'Night', 'Night', 
+    'off', 'off'
+  ];
+
+  // গ্রুপের শুরু হওয়ার তারিখ (২০২৬ সালের জানুয়ারি মাসের হিসেবে)
+  const groupStartDates = {
+    1: new Date(2026, 0, 24),
+    2: new Date(2026, 0, 3),
+    3: new Date(2026, 0, 10),
+    4: new Date(2026, 0, 17)
+  };
+
+  // শুধুমাত্র ফিক্সড ছুটির দিনগুলোর লিস্ট (প্রতি বছর একই তারিখে হয়)
+  const fixedHolidays = [
+    {m: 0, d: 23}, // 23 Jan - Netaji Jayanti
+    {m: 0, d: 26}, // 26 Jan - Republic Day
+    {m: 4, d: 1},  // 1 May - May Day / Labour Day
+    {m: 7, d: 15}, // 15 August - Independence Day
+    {m: 9, d: 2},  // 2 October - Gandhi Jayanti
+    {m: 11, d: 25} // 25 December - Christmas
+  ];
+
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  function initSelectors() {
+    const select = document.getElementById('yearSelect');
+    const currentYear = new Date().getFullYear();
+    
+    // ২০০০ সাল থেকে ২১৫০ সাল পর্যন্ত (১৫০ বছর) যোগ করা হলো
+    for (let y = 2000; y <= 2150; y++) {
+      let option = document.createElement('option');
+      option.value = y;
+      option.text = y;
+      if (y === currentYear) {
+        option.selected = true; 
+      }
+      select.appendChild(option);
+    }
+    generateCalendar(); 
+  }
+
+  function generateCalendar() {
+    const year = parseInt(document.getElementById('yearSelect').value);
+    const selectedGroup = parseInt(document.getElementById('groupSelect').value);
+    
+    // সিলেক্ট করা গ্রুপের রেফারেন্স ডেট
+    const refDate = groupStartDates[selectedGroup];
+
+    const container = document.getElementById('calendar');
+    container.innerHTML = ''; 
+    
+    const today = new Date(); 
+    let todayShift = null;
+
+    for (let month = 0; month < 12; month++) {
+      const monthDiv = document.createElement('div');
+      monthDiv.className = 'month';
+      monthDiv.innerHTML = `<h2>${months[month]}</h2>`;
+
+      const grid = document.createElement('div');
+      grid.className = 'days-grid';
+
+      days.forEach(day => {
+        const div = document.createElement('div');
+        div.className = 'day-header';
+        div.textContent = day;
+        grid.appendChild(div);
+      });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'day empty';
+        grid.appendChild(empty);
+      }
+
+      for (let date = 1; date <= daysInMonth; date++) {
+        const currentDate = new Date(year, month, date);
+        
+        const diffTime = currentDate.getTime() - refDate.getTime();
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+        let cycleIndex = diffDays % 28;
+        if (cycleIndex < 0) { cycleIndex += 28; }
+        const shift = cycle[cycleIndex];
+        
+        // এখন শুধুমাত্র ফিক্সড হলিডে চেক করা হচ্ছে
+        const isHoliday = fixedHolidays.some(h => h.m === month && h.d === date);
+
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'day';
+        dayDiv.setAttribute('data-shift', shift);
+        
+        if (isHoliday) {
+          dayDiv.classList.add('holiday-ccl');
+          dayDiv.setAttribute('data-holiday', 'true');
+        }
+
+        if (today.getFullYear() === year && today.getMonth() === month && today.getDate() === date) {
+          dayDiv.classList.add('today-highlight');
+          todayShift = shift;
+        }
+
+        let innerContent = `<span class="date">${date}</span>`;
+        if (isHoliday) {
+          innerContent += `<span class="ccl-tag">CCL</span>`;
+        }
+        innerContent += `<span class="shift shift-${shift}">${shift}</span>`;
+        
+        dayDiv.innerHTML = innerContent;
+        grid.appendChild(dayDiv);
+      }
+
+      monthDiv.appendChild(grid);
+      container.appendChild(monthDiv);
+    }
+
+    const banner = document.getElementById('todayBanner');
+    if (today.getFullYear() === year && todayShift) {
+      let shiftText = todayShift;
+      if (shiftText === 'Mor') shiftText = 'Morning Duty';
+      if (shiftText === 'Eve') shiftText = 'Evening Duty';
+      if (shiftText === 'Night') shiftText = 'Night Duty';
+      if (shiftText === 'off') shiftText = 'Off Day (ছুটি)!';
+      if (shiftText === 'spr') shiftText = 'Spare Duty';
+      
+      const banglaMonths = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+      
+      banner.innerHTML = `
+        <span class="date-text">আজ <strong>${today.getDate()} ${banglaMonths[today.getMonth()]}</strong>. <strong>Group-${selectedGroup}</strong>-এর জন্য আপনার আজকের ডিউটি:</span><br>
+        <span class="shift-text shift-${todayShift}">${shiftText}</span>
+      `;
+    } else {
+      banner.innerHTML = `আপনি <strong>${year}</strong> সালের <strong>Group-${selectedGroup}</strong>-এর ক্যালেন্ডার দেখছেন। আজকের ডিউটি দেখতে ড্রপডাউন থেকে বর্তমান সাল সিলেক্ট করুন।`;
+    }
+    
+    filterShifts('all');
+  }
+
+  function filterShifts(selectedShift) {
+    const allDays = document.querySelectorAll('.day[data-shift]');
+    allDays.forEach(day => {
+      day.classList.remove('dimmed');
+      
+      if (selectedShift !== 'all') {
+        if (selectedShift === 'ccl') {
+          if (day.getAttribute('data-holiday') !== 'true') {
+            day.classList.add('dimmed');
+          }
+        } else {
+          if (day.getAttribute('data-shift') !== selectedShift) {
+            day.classList.add('dimmed');
+          }
+        }
+      }
+    });
+  }
+
+  window.onload = initSelectors;
+</script>
+
+</body>
+</html>
+ok
