@@ -16,7 +16,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 99999; /* সবার উপরে থাকবে */
+    z-index: 99999;
   }
   .login-box {
     background: white; padding: 30px; border-radius: 12px;
@@ -198,23 +198,25 @@
   import { getFirestore, doc, setDoc, onSnapshot, collection, deleteField } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
   const firebaseConfig = {
-  apiKey: "AIzaSyDLMx-d0NrIwuBgxvJiA-m8y9t7LBZibtg",
-  authDomain: "wbpdcl-chp.firebaseapp.com",
-  projectId: "wbpdcl-chp",
-  storageBucket: "wbpdcl-chp.firebasestorage.app",
-  messagingSenderId: "305922970752",
-  appId: "1:305922970752:web:23e4569c1851e3169f0265",
-  measurementId: "G-7TYL4DB02P"
-};
+    apiKey: "AIzaSyDLMx-d0NrIwuBgxvJiA-m8y9t7LBZibtg",
+    authDomain: "wbpdcl-chp.firebaseapp.com",
+    projectId: "wbpdcl-chp",
+    storageBucket: "wbpdcl-chp.firebasestorage.app",
+    messagingSenderId: "305922970752",
+    appId: "1:305922970752:web:23e4569c1851e3169f0265",
+    measurementId: "G-7TYL4DB02P"
+  };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
+  // ⚠️ অ্যাডমিন ইমেইল (এখানে একাধিক ইমেইল যোগ করতে পারো)
   const ADMIN_EMAILS = ["mondalarpon2@gmail.com"]; 
+  
   let currentUser = null;
   let customData = {}; 
-  let isAppInitialized = false; // লগইনের আগে রেন্ডার আটকাতে
+  let isAppInitialized = false; 
 
   const USER_MAPPING = {
     "sanjoy@roster.com": "Sanjoy-5339",
@@ -240,23 +242,20 @@
     const emailDisplay = document.getElementById('userEmailDisplay');
     
     if (user) {
-      // লগইন সফল হলে মেইন অ্যাপ দেখাবে
       currentUser = user;
       loginScreen.style.display = 'none';
       mainApp.style.display = 'block';
       emailDisplay.textContent = user.email;
       
-      // শুধুমাত্র লগইন কনফার্ম হলেই ক্যালেন্ডার তৈরি শুরু হবে
       if(!isAppInitialized) {
         initializeAppUI();
         isAppInitialized = true;
       }
     } else {
-      // লগআউট থাকলে বা লগইন না হলে শুধু লগইন পেজ দেখাবে
       currentUser = null;
       loginScreen.style.display = 'flex';
       mainApp.style.display = 'none';
-      document.getElementById('calendar').innerHTML = ''; // সিকিউরিটির জন্য ক্যালেন্ডার ক্লিয়ার করে দেওয়া
+      document.getElementById('calendar').innerHTML = ''; 
       isAppInitialized = false;
     }
   });
@@ -285,7 +284,6 @@
   onSnapshot(collection(db, "daily_updates"), (snapshot) => {
     customData = {};
     snapshot.forEach((docSnap) => { customData[docSnap.id] = docSnap.data(); });
-    // যদি লগইন করা থাকে, তবেই আপডেট দেখাবে
     if(currentUser && isAppInitialized) window.updateView();
   });
 
@@ -306,17 +304,14 @@
   
   let todayDateForModal = new Date();
 
-  // --- Initializing App UI (Only runs after login) ---
   function initializeAppUI() {
     const userSelect = document.getElementById("userSelect");
     const editUserSelect = document.getElementById("editUserSelect");
     
-    // Clear previous options to prevent duplicates if relogged
     userSelect.innerHTML = ''; 
     editUserSelect.innerHTML = '';
 
-    // Auto-select user based on login email (Mapping)
-    let autoSelectIndex = 11; // Default to Arpon (index 11)
+    let autoSelectIndex = 11; 
     if(USER_MAPPING[currentUser.email]) {
        let mappedName = USER_MAPPING[currentUser.email];
        autoSelectIndex = usersData.findIndex(u => u.name === mappedName);
@@ -339,7 +334,7 @@
   }
 
   window.updateView = function() {
-    if(!currentUser) return; // সিকিউরিটি চেক
+    if(!currentUser) return;
     renderCalendar(document.getElementById("userSelect").value, parseInt(document.getElementById("yearSelect").value));
   }
 
@@ -481,22 +476,30 @@
     });
 
     const form = document.getElementById('updateForm');
-    form.style.display = 'flex';
     document.getElementById('saveBtn').innerText = "Save Update";
     
+    // --- Security Checks For Showing Form ---
     if(ADMIN_EMAILS.includes(currentUser.email)) {
+       form.style.display = 'flex';
        editUserSelect.disabled = false;
+    } else if(USER_MAPPING[currentUser.email]) {
+       form.style.display = 'flex';
+       editUserSelect.value = USER_MAPPING[currentUser.email];
+       editUserSelect.disabled = true;
     } else {
-       const mappedName = USER_MAPPING[currentUser.email];
-       if(mappedName) {
-         editUserSelect.value = mappedName;
-         editUserSelect.disabled = true;
-       }
+       form.style.display = 'none'; // Unknown users cannot see the update form
     }
+    
     document.getElementById('rosterModal').style.display = "block";
   }
 
   window.saveDutyUpdate = async function() {
+    // --- Backend Security Check ---
+    if(!ADMIN_EMAILS.includes(currentUser.email) && !USER_MAPPING[currentUser.email]) {
+        alert("Access Denied! You are not authorized to update.");
+        return;
+    }
+
     const btn = document.getElementById('saveBtn');
     btn.innerText = "Saving...";
     const uName = document.getElementById('editUserSelect').value;
