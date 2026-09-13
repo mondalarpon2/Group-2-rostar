@@ -8,21 +8,8 @@
   * { box-sizing: border-box; }
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 0; overflow-x: hidden; }
   
-  /* --- Strict Login Screen --- */
-  #loginScreen {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-color: #2c3e50;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-  }
-  .login-box {
-    background: white; padding: 30px; border-radius: 12px;
-    width: 90%; max-width: 400px; text-align: center;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-  }
+  #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #2c3e50; display: flex; justify-content: center; align-items: center; z-index: 99999; }
+  .login-box { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
   .login-box h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
   .login-form { display: flex; flex-direction: column; gap: 15px; }
   .login-form input { padding: 12px; font-size: 1em; border: 1px solid #ccc; border-radius: 6px; outline: none; transition: 0.3s; }
@@ -31,9 +18,7 @@
   .login-form button:hover { background: #388E3C; }
   .login-error { color: #F44336; font-size: 0.9em; font-weight: bold; display: none; margin-top: -5px; }
 
-  /* --- Main Application Container (Hidden by default) --- */
   #mainApp { display: none; padding: 15px; }
-
   h1 { text-align: center; color: #111; margin-bottom: 15px; font-size: 1.8em; }
   
   .page-nav { max-width: 1400px; margin: 0 auto 16px auto; padding: 10px 12px; background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
@@ -73,12 +58,12 @@
   .point-tag[data-type="ot"] { background-color: #fff3e0; border-color: #FF9800; color: #e65100; }
 
   .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
-  .modal-content { background-color: white; margin: 5% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+  .modal-content { background-color: white; margin: 5% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
   .close-modal { position: absolute; right: 15px; top: 10px; font-size: 28px; font-weight: bold; cursor: pointer; color: #555; transition: 0.2s; }
   .close-modal:hover { color: #f44336; }
   .modal-title { font-size: 1.3em; font-weight: bold; margin-bottom: 15px; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #2c3e50; }
   
-  .roster-list { width: 100%; border-collapse: collapse; font-size: 1em; }
+  .roster-list { width: 100%; border-collapse: collapse; font-size: 0.9em; }
   .roster-list th, .roster-list td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
   .roster-list th { background: #f4f6f9; font-weight: bold; color: #555; }
   .roster-list tr:last-child td { border-bottom: none; }
@@ -90,7 +75,12 @@
   .update-form button { background: #2196F3; color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
   .update-form button:hover { background: #1976D2; }
   .empty { border: none; background: transparent; cursor: default; }
-  .empty:hover { background-color: transparent !important; transform: none !important; box-shadow: none !important; }
+
+  /* Report Specific Styles */
+  .report-section-title { padding: 8px; margin-top: 20px; margin-bottom: 10px; border-radius: 6px; font-size: 1.1em; font-weight: bold; color: white; text-align: center; }
+  .bg-ot { background-color: #FF9800; }
+  .bg-leave { background-color: #E91E63; }
+  .report-sub-title { font-size: 1em; color: #333; border-bottom: 2px solid #eee; margin-top: 15px; padding-bottom: 5px; }
 
   @media (max-width: 480px) {
     .calendar-container { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
@@ -102,18 +92,10 @@
     .nav-btn.logout-btn { margin-left: 0; flex-grow: 1; text-align: center; }
     .selectors { gap: 8px; }
     select { padding: 6px 10px; font-size: 0.9em; width: 45%; min-width: auto; }
-    .today-banner { padding: 12px; }
-    .today-shift, .today-point { font-size: 1em; padding: 5px 10px; }
-    .filter-btn { font-size: 0.8em; padding: 6px 5px; flex: 1 1 calc(33% - 10px); }
-    .month { padding: 8px; }
-    .days-grid { gap: 2px; }
     .day { min-height: 55px; padding: 3px 1px; }
-    .day:hover:not(.empty) { transform: none; box-shadow: none; } 
     .date { font-size: 0.85em; }
     .shift-tag, .point-tag { font-size: 0.55em; padding: 2px 0; }
     .modal-content { margin: 15% auto; width: 95%; padding: 15px; }
-    .modal-title { font-size: 1.1em; }
-    .roster-list th, .roster-list td { padding: 8px; }
   }
 </style>
 </head>
@@ -132,14 +114,16 @@
   </div>
 </div>
 
-<!-- Main Application (Hidden by default) -->
+<!-- Main Application -->
 <div id="mainApp">
   <nav class="page-nav">
-   
-   <a href="index.html" aria-current="page" style="padding:6px 12px;border-radius:6px;background:#2c3e50;color:#fff;text-decoration:none;font-weight:bold;font-size:0.9em;">Home</a>
-  <a href="all-groups.html"  style="padding:6px 12px;border-radius:6px;background:#1a1a1a;color:#fff;text-decoration:none;font-weight:bold;font-size:0.9em;">All Groups</a>
-  <a href="group2-2026.html" style="padding:6px 12px;border-radius:6px;background:#2c3e50;color:#fff;text-decoration:none;font-weight:bold;font-size:0.9em;">Group-2 &middot; 2026</a>
-   
+    <a href="index.html" class="nav-btn">Home</a>
+    <a href="all-groups.html" class="nav-btn">All Groups</a>
+    <a href="group2-2026.html" class="nav-btn active">Group-2 &middot; 2026</a>
+    
+    <button id="reportBtn" class="nav-btn" style="background: #9C27B0; display: none;" onclick="openReportModal()">Monthly Report</button>
+    <button id="downloadBtn" class="nav-btn" style="background: #FF9800; display: none;" onclick="downloadReport()">Download CSV</button>
+
     <span id="userEmailDisplay" class="user-email-display"></span>
     <button id="logoutBtn" class="nav-btn logout-btn" onclick="logoutUser()">Logout</button>
   </nav>
@@ -165,7 +149,7 @@
   <div class="calendar-container" id="calendar"></div>
 </div>
 
-<!-- Roster Modal -->
+<!-- Update Modal -->
 <div id="rosterModal" class="modal">
   <div class="modal-content">
     <span class="close-modal" onclick="closeRosterModal()">&times;</span>
@@ -194,6 +178,27 @@
   </div>
 </div>
 
+<!-- Smart Report Modal -->
+<div id="reportModal" class="modal">
+  <div class="modal-content" style="max-width: 650px;">
+    <span class="close-modal" onclick="closeReportModal()">&times;</span>
+    <div class="modal-title">Monthly Separated Report</div>
+    <div style="text-align:center; margin-bottom: 15px; display: flex; justify-content: center; gap: 10px;">
+       <select id="reportMonthSelect" style="min-width: 100px;">
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+       </select>
+       <select id="reportYearSelect" style="min-width: 100px;"></select>
+       <button onclick="generateReport()" style="padding: 8px 15px; background: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">View Report</button>
+    </div>
+    <div id="reportResult" style="max-height: 60vh; overflow-y: auto; padding: 5px;">
+       <p style="text-align:center; color:#777;">Select month & year and click View Report.</p>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -205,17 +210,14 @@
     projectId: "wbpdcl-chp",
     storageBucket: "wbpdcl-chp.firebasestorage.app",
     messagingSenderId: "305922970752",
-    appId: "1:305922970752:web:23e4569c1851e3169f0265",
-    measurementId: "G-7TYL4DB02P"
+    appId: "1:305922970752:web:23e4569c1851e3169f0265"
   };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // ⚠️ অ্যাডমিন ইমেইল (এখানে একাধিক ইমেইল যোগ করতে পারো)
   const ADMIN_EMAILS = ["mondalarpon2@gmail.com"]; 
-  
   let currentUser = null;
   let customData = {}; 
   let isAppInitialized = false; 
@@ -237,58 +239,6 @@
     "satya@roster.com": "Satya-10815"
   };
 
-  // --- Strict Auth Listener ---
-  onAuthStateChanged(auth, (user) => {
-    const loginScreen = document.getElementById('loginScreen');
-    const mainApp = document.getElementById('mainApp');
-    const emailDisplay = document.getElementById('userEmailDisplay');
-    
-    if (user) {
-      currentUser = user;
-      loginScreen.style.display = 'none';
-      mainApp.style.display = 'block';
-      emailDisplay.textContent = user.email;
-      
-      if(!isAppInitialized) {
-        initializeAppUI();
-        isAppInitialized = true;
-      }
-    } else {
-      currentUser = null;
-      loginScreen.style.display = 'flex';
-      mainApp.style.display = 'none';
-      document.getElementById('calendar').innerHTML = ''; 
-      isAppInitialized = false;
-    }
-  });
-
-  window.loginUser = () => {
-    const e = document.getElementById('emailInput').value;
-    const p = document.getElementById('passwordInput').value;
-    const err = document.getElementById('loginErrorMsg');
-    const btn = document.getElementById('loginActionBtn');
-    
-    if(!e || !p) return;
-    btn.innerText = "Checking...";
-    signInWithEmailAndPassword(auth, e, p).then(() => {
-       btn.innerText = "Login to Roster";
-       err.style.display = 'none';
-    }).catch(error => { 
-       btn.innerText = "Login to Roster";
-       err.style.display = 'block'; 
-       err.textContent = "Wrong Email or Password!"; 
-    });
-  }
-  
-  window.logoutUser = () => signOut(auth);
-
-  // --- Database Listener ---
-  onSnapshot(collection(db, "daily_updates"), (snapshot) => {
-    customData = {};
-    snapshot.forEach((docSnap) => { customData[docSnap.id] = docSnap.data(); });
-    if(currentUser && isAppInitialized) window.updateView();
-  });
-
   const usersData = [
     { name: "Sanjoy-5339", offset: 0 }, { name: "Prithviraj-5515", offset: 1 }, { name: "Kolimuddin", offset: 2 },
     { name: "Sourav-10803", offset: 3 }, { name: "Rana-10801", offset: 4 }, { name: "Pratap-10731", offset: 5 },
@@ -303,15 +253,53 @@
   const minYear = 2024; const maxYear = 2060;
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  
   let todayDateForModal = new Date();
 
+  // --- Auth & Realtime Data ---
+  onAuthStateChanged(auth, (user) => {
+    const loginScreen = document.getElementById('loginScreen');
+    const mainApp = document.getElementById('mainApp');
+    
+    if (user) {
+      currentUser = user;
+      loginScreen.style.display = 'none';
+      mainApp.style.display = 'block';
+      document.getElementById('userEmailDisplay').textContent = user.email;
+      document.getElementById('reportBtn').style.display = 'inline-block';
+      document.getElementById('downloadBtn').style.display = 'inline-block';
+      
+      if(!isAppInitialized) { initializeAppUI(); isAppInitialized = true; }
+    } else {
+      currentUser = null;
+      loginScreen.style.display = 'flex';
+      mainApp.style.display = 'none';
+      document.getElementById('calendar').innerHTML = ''; 
+      document.getElementById('reportBtn').style.display = 'none';
+      document.getElementById('downloadBtn').style.display = 'none';
+      isAppInitialized = false;
+    }
+  });
+
+  window.loginUser = () => {
+    const e = document.getElementById('emailInput').value, p = document.getElementById('passwordInput').value, err = document.getElementById('loginErrorMsg'), btn = document.getElementById('loginActionBtn');
+    if(!e || !p) return;
+    btn.innerText = "Checking...";
+    signInWithEmailAndPassword(auth, e, p).then(() => { btn.innerText = "Login to Roster"; err.style.display = 'none'; })
+    .catch(() => { btn.innerText = "Login to Roster"; err.style.display = 'block'; err.textContent = "Wrong Email or Password!"; });
+  }
+  window.logoutUser = () => signOut(auth);
+
+  onSnapshot(collection(db, "daily_updates"), (snapshot) => {
+    customData = {};
+    snapshot.forEach((docSnap) => { customData[docSnap.id] = docSnap.data(); });
+    if(currentUser && isAppInitialized) window.updateView();
+  });
+
+  // --- Initialize App ---
   function initializeAppUI() {
     const userSelect = document.getElementById("userSelect");
     const editUserSelect = document.getElementById("editUserSelect");
-    
-    userSelect.innerHTML = ''; 
-    editUserSelect.innerHTML = '';
+    userSelect.innerHTML = ''; editUserSelect.innerHTML = '';
 
     let autoSelectIndex = 11; 
     if(USER_MAPPING[currentUser.email]) {
@@ -328,10 +316,16 @@
     });
 
     const yearSelect = document.getElementById("yearSelect");
+    const rYearSelect = document.getElementById("reportYearSelect");
     if(yearSelect.options.length === 0) {
-      for(let y = minYear; y <= maxYear; y++) { let opt = new Option(y, y); if(y===new Date().getFullYear() || y===2026) opt.selected=true; yearSelect.appendChild(opt); }
+      for(let y = minYear; y <= maxYear; y++) { 
+        let opt = new Option(y, y); let opt2 = new Option(y, y);
+        if(y===new Date().getFullYear() || y===2026) { opt.selected=true; opt2.selected=true; }
+        yearSelect.appendChild(opt); rYearSelect.appendChild(opt2);
+      }
     }
     
+    document.getElementById("reportMonthSelect").value = (new Date().getMonth() + 1).toString();
     window.updateView();
   }
 
@@ -340,6 +334,7 @@
     renderCalendar(document.getElementById("userSelect").value, parseInt(document.getElementById("yearSelect").value));
   }
 
+  // --- Core Calendar Logic ---
   function getShiftForDate(date) {
     let d1 = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     let d2 = new Date(shiftRefDate.getFullYear(), shiftRefDate.getMonth(), shiftRefDate.getDate());
@@ -351,34 +346,21 @@
   function getBasePointForUser(date, userOffset) {
     let shift = getShiftForDate(date);
     if(shift === 'off' || shift === 'spr') return null;
-
-    let targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    let refDate = new Date(pointRefDate.getFullYear(), pointRefDate.getMonth(), pointRefDate.getDate());
-    let cycleLen = pointCycle.length; 
-    let workingDaysCount = 0;
+    let targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()), refDate = new Date(pointRefDate.getFullYear(), pointRefDate.getMonth(), pointRefDate.getDate());
+    let cycleLen = pointCycle.length, workingDaysCount = 0;
 
     if (targetDate >= refDate) {
       let cur = new Date(refDate);
-      while(cur < targetDate) {
-        let s = getShiftForDate(cur);
-        if(s !== 'off' && s !== 'spr') workingDaysCount++;
-        cur.setDate(cur.getDate() + 1);
-      }
+      while(cur < targetDate) { let s = getShiftForDate(cur); if(s !== 'off' && s !== 'spr') workingDaysCount++; cur.setDate(cur.getDate() + 1); }
     } else {
-      let cur = new Date(refDate);
-      cur.setDate(cur.getDate() - 1);
-      while(cur >= targetDate) {
-        let s = getShiftForDate(cur);
-        if(s !== 'off' && s !== 'spr') workingDaysCount++;
-        cur.setDate(cur.getDate() - 1);
-      }
+      let cur = new Date(refDate); cur.setDate(cur.getDate() - 1);
+      while(cur >= targetDate) { let s = getShiftForDate(cur); if(s !== 'off' && s !== 'spr') workingDaysCount++; cur.setDate(cur.getDate() - 1); }
       workingDaysCount = -workingDaysCount;
     }
 
     let offsetJump = Math.floor(workingDaysCount / 14);
     let pointIndex = (userOffset + workingDaysCount + offsetJump) % cycleLen;
     if (pointIndex < 0) { pointIndex = (pointIndex % cycleLen + cycleLen) % cycleLen; }
-    
     return pointCycle[pointIndex];
   }
 
@@ -395,13 +377,9 @@
   function renderCalendar(userIndex, selectedYear) {
     const container = document.getElementById('calendar'); container.innerHTML = '';
     const today = new Date(); const user = usersData[userIndex];
-
-    const currentBaseShift = getShiftForDate(today);
-    const currentBasePoint = getBasePointForUser(today, user.offset);
-    const actualToday = getActualStatus(today, user.name, currentBaseShift, currentBasePoint);
+    const actualToday = getActualStatus(today, user.name, getShiftForDate(today), getBasePointForUser(today, user.offset));
     
-    let extraOTPoint = actualToday.customType === 'OT' ? actualToday.otPoint : null;
-    updateBanner(today, user.name, actualToday.shift, actualToday.point, actualToday.customType, extraOTPoint);
+    updateBanner(today, user.name, actualToday.shift, actualToday.point, actualToday.customType, actualToday.customType === 'OT' ? actualToday.otPoint : null);
     todayDateForModal = today;
 
     for (let month = 0; month < 12; month++) {
@@ -409,31 +387,22 @@
       const grid = document.createElement('div'); grid.className = 'days-grid';
       days.forEach(d => { const div = document.createElement('div'); div.className = 'day-header'; div.textContent = d; grid.appendChild(div); });
 
-      const firstDay = new Date(selectedYear, month, 1).getDay();
-      const daysInMonth = new Date(selectedYear, month + 1, 0).getDate();
+      const firstDay = new Date(selectedYear, month, 1).getDay(), daysInMonth = new Date(selectedYear, month + 1, 0).getDate();
       for (let i = 0; i < firstDay; i++) { grid.appendChild(document.createElement('div')).className = 'day empty'; }
 
       for (let date = 1; date <= daysInMonth; date++) {
-        let curDate = new Date(selectedYear, month, date);
-        let baseShift = getShiftForDate(curDate);
-        let basePoint = getBasePointForUser(curDate, user.offset);
+        let curDate = new Date(selectedYear, month, date), baseShift = getShiftForDate(curDate), basePoint = getBasePointForUser(curDate, user.offset);
         let actual = getActualStatus(curDate, user.name, baseShift, basePoint);
 
-        const dayDiv = document.createElement('div'); dayDiv.className = 'day';
-        dayDiv.setAttribute('data-shift', actual.shift);
+        const dayDiv = document.createElement('div'); dayDiv.className = 'day'; dayDiv.setAttribute('data-shift', actual.shift);
         dayDiv.onclick = () => window.openRosterModal(curDate, baseShift);
-
-        if (today.getFullYear() === selectedYear && today.getMonth() === month && today.getDate() === date) {
-          dayDiv.classList.add('today-highlight');
-        }
+        if (today.getFullYear() === selectedYear && today.getMonth() === month && today.getDate() === date) dayDiv.classList.add('today-highlight');
 
         let sName = actual.shift === 'Mor' ? 'Morning' : actual.shift === 'Eve' ? 'Evening' : actual.shift === 'spr' ? 'Spare' : actual.shift;
-        
         dayDiv.innerHTML = `<span class="date">${date}</span><span class="shift-tag shift-${actual.shift}">${sName}</span>`;
         if(actual.customType === 'Leave') dayDiv.innerHTML += `<span class="shift-tag shift-Leave" style="margin-top:-2px; padding: 2px 0;">LEAVE</span>`;
         if(actual.point) dayDiv.innerHTML += `<span class="point-tag" data-type="default">${actual.point.toUpperCase()}</span>`;
         if(actual.customType === 'OT') dayDiv.innerHTML += `<span class="point-tag" data-type="ot">${actual.otPoint.toUpperCase()} (OT)</span>`;
-        
         grid.appendChild(dayDiv);
       }
       monthDiv.appendChild(grid); container.appendChild(monthDiv);
@@ -462,17 +431,12 @@
     usersData.forEach(user => {
       let bPoint = getBasePointForUser(date, user.offset);
       let actual = getActualStatus(date, user.name, shift, bPoint);
-      
       let originalPointHtml = actual.point ? `<span class="point-tag" style="padding:2px 6px; display:inline-block; width:auto;" data-type="default">${actual.point.toUpperCase()}</span>` : '';
       let pointHtml = '';
       
-      if(actual.customType === 'Leave') {
-         pointHtml = originalPointHtml + ` <span class="shift-tag shift-Leave" style="padding:2px 6px; display:inline-block; width:auto; margin:0;">LEAVE</span>`;
-      } else if (actual.customType === 'OT') {
-         pointHtml = originalPointHtml + ` <span class="point-tag" style="padding:2px 6px; display:inline-block; width:auto; margin-left:4px;" data-type="ot">${actual.otPoint.toUpperCase()} (OT)</span>`;
-      } else {
-         pointHtml = actual.point ? originalPointHtml : '<span style="color:#999; font-weight:bold;">N/A</span>';
-      }
+      if(actual.customType === 'Leave') pointHtml = originalPointHtml + ` <span class="shift-tag shift-Leave" style="padding:2px 6px; display:inline-block; width:auto; margin:0;">LEAVE</span>`;
+      else if (actual.customType === 'OT') pointHtml = originalPointHtml + ` <span class="point-tag" style="padding:2px 6px; display:inline-block; width:auto; margin-left:4px;" data-type="ot">${actual.otPoint.toUpperCase()} (OT)</span>`;
+      else pointHtml = actual.point ? originalPointHtml : '<span style="color:#999; font-weight:bold;">N/A</span>';
       
       body.innerHTML += `<tr><td><b>${user.name}</b></td><td>${pointHtml}</td></tr>`;
     });
@@ -480,58 +444,143 @@
     const form = document.getElementById('updateForm');
     document.getElementById('saveBtn').innerText = "Save Update";
     
-    // --- Security Checks For Showing Form ---
-    if(ADMIN_EMAILS.includes(currentUser.email)) {
-       form.style.display = 'flex';
-       editUserSelect.disabled = false;
-    } else if(USER_MAPPING[currentUser.email]) {
-       form.style.display = 'flex';
-       editUserSelect.value = USER_MAPPING[currentUser.email];
-       editUserSelect.disabled = true;
-    } else {
-       form.style.display = 'none'; // Unknown users cannot see the update form
-    }
-    
+    if(ADMIN_EMAILS.includes(currentUser.email)) { form.style.display = 'flex'; editUserSelect.disabled = false; }
+    else if(USER_MAPPING[currentUser.email]) { form.style.display = 'flex'; editUserSelect.value = USER_MAPPING[currentUser.email]; editUserSelect.disabled = true; }
+    else { form.style.display = 'none'; }
     document.getElementById('rosterModal').style.display = "block";
   }
 
   window.saveDutyUpdate = async function() {
-    // --- Backend Security Check ---
-    if(!ADMIN_EMAILS.includes(currentUser.email) && !USER_MAPPING[currentUser.email]) {
-        alert("Access Denied! You are not authorized to update.");
-        return;
-    }
-
-    const btn = document.getElementById('saveBtn');
-    btn.innerText = "Saving...";
-    const uName = document.getElementById('editUserSelect').value;
-    const type = document.getElementById('editTypeSelect').value;
-    const point = document.getElementById('editPointSelect').value;
-    const dateKey = `${todayDateForModal.getFullYear()}-${todayDateForModal.getMonth()+1}-${todayDateForModal.getDate()}`;
+    if(!ADMIN_EMAILS.includes(currentUser.email) && !USER_MAPPING[currentUser.email]) { alert("Access Denied! You are not authorized."); return; }
+    const btn = document.getElementById('saveBtn'), uName = document.getElementById('editUserSelect').value, type = document.getElementById('editTypeSelect').value;
+    const point = document.getElementById('editPointSelect').value, dateKey = `${todayDateForModal.getFullYear()}-${todayDateForModal.getMonth()+1}-${todayDateForModal.getDate()}`;
     const docRef = doc(db, "daily_updates", dateKey);
-
+    btn.innerText = "Saving...";
     try {
-      if(type === 'Reset') {
-        await setDoc(docRef, { [uName]: deleteField() }, { merge: true });
-      } else {
-        await setDoc(docRef, { [uName]: { type: type, point: type === 'OT' ? point : null, updatedBy: currentUser.email } }, { merge: true });
-      }
-      btn.innerText = "Saved!";
-      setTimeout(() => window.closeRosterModal(), 1000);
-    } catch(e) {
-      alert("Error: " + e.message);
-      btn.innerText = "Save Update";
-    }
+      if(type === 'Reset') await setDoc(docRef, { [uName]: deleteField() }, { merge: true });
+      else await setDoc(docRef, { [uName]: { type: type, point: type === 'OT' ? point : null, updatedBy: currentUser.email } }, { merge: true });
+      btn.innerText = "Saved!"; setTimeout(() => window.closeRosterModal(), 1000);
+    } catch(e) { alert("Error: " + e.message); btn.innerText = "Save Update"; }
   }
 
+  // --- SEPARATED REPORTS LOGIC ---
+  window.openReportModal = () => document.getElementById('reportModal').style.display = 'block';
+  window.closeReportModal = () => document.getElementById('reportModal').style.display = 'none';
   window.closeRosterModal = () => document.getElementById('rosterModal').style.display = "none";
-  window.onclick = (e) => { if (e.target == document.getElementById('rosterModal')) window.closeRosterModal(); }
-  
-  window.filterData = function(v) {
-    document.querySelectorAll('.day[data-shift]').forEach(d => {
-      d.classList.remove('dimmed');
-      if (v !== 'all' && d.getAttribute('data-shift') !== v && !(v==='Leave' && d.innerHTML.includes('LEAVE'))) d.classList.add('dimmed');
+  window.onclick = (e) => { if (e.target == document.getElementById('rosterModal')) window.closeRosterModal(); if (e.target == document.getElementById('reportModal')) window.closeReportModal(); }
+  window.filterData = function(v) { document.querySelectorAll('.day[data-shift]').forEach(d => { d.classList.remove('dimmed'); if (v !== 'all' && d.getAttribute('data-shift') !== v && !(v==='Leave' && d.innerHTML.includes('LEAVE'))) d.classList.add('dimmed'); }); }
+
+  window.generateReport = function() {
+    const selMonth = parseInt(document.getElementById('reportMonthSelect').value);
+    const selYear = document.getElementById('reportYearSelect').value;
+    const resDiv = document.getElementById('reportResult');
+    
+    // Separate Objects for OT and Leave
+    let otNameWise = {}; let otDateWise = {};
+    let leaveNameWise = {}; let leaveDateWise = {};
+
+    usersData.forEach(u => { 
+      otNameWise[u.name] = []; 
+      leaveNameWise[u.name] = []; 
     });
+
+    let hasOT = false; let hasLeave = false;
+
+    for (const dateKey in customData) {
+      let [dy, dm, dd] = dateKey.split('-');
+      if (dy == selYear && dm == selMonth) {
+        for (const userName in customData[dateKey]) {
+           const record = customData[dateKey][userName];
+           
+           if(record.type === 'OT') {
+             hasOT = true;
+             if(otNameWise[userName]) otNameWise[userName].push(`${dd}th (${record.point.toUpperCase()})`);
+             if(!otDateWise[dd]) otDateWise[dd] = [];
+             otDateWise[dd].push(`${userName} (${record.point.toUpperCase()})`);
+           } 
+           else if(record.type === 'Leave') {
+             hasLeave = true;
+             if(leaveNameWise[userName]) leaveNameWise[userName].push(`${dd}th`);
+             if(!leaveDateWise[dd]) leaveDateWise[dd] = [];
+             leaveDateWise[dd].push(userName);
+           }
+        }
+      }
+    }
+
+    let html = '';
+
+    // ==========================================
+    // 🟠 SECTION 1: OVERTIME (OT) REPORT
+    // ==========================================
+    html += `<div class="report-section-title bg-ot">🟠 Overtime (OT) Report</div>`;
+    if(!hasOT) {
+      html += `<p style="text-align:center; color:#777;">No Overtime data for this month.</p>`;
+    } else {
+      // Name-wise OT
+      html += `<div class="report-sub-title">👤 Name-wise OT</div>`;
+      html += `<table class="roster-list"><thead><tr><th>Name</th><th>Total OT</th><th>Dates & Points</th></tr></thead><tbody>`;
+      for(const uName in otNameWise) {
+         if(otNameWise[uName].length > 0) {
+           html += `<tr><td><b>${uName}</b></td><td><b style="color:#FF9800;">${otNameWise[uName].length}</b></td><td>${otNameWise[uName].join(', ')}</td></tr>`;
+         }
+      }
+      html += `</tbody></table>`;
+
+      // Date-wise OT
+      html += `<div class="report-sub-title">📅 Date-wise OT</div>`;
+      html += `<table class="roster-list"><thead><tr><th>Date</th><th>Employees</th></tr></thead><tbody>`;
+      let sortedOTDates = Object.keys(otDateWise).sort((a,b) => parseInt(a) - parseInt(b));
+      for(const d of sortedOTDates) {
+         html += `<tr><td><b>${d} ${months[selMonth-1]}</b></td><td>${otDateWise[d].join(', ')}</td></tr>`;
+      }
+      html += `</tbody></table>`;
+    }
+
+    // ==========================================
+    // 🔴 SECTION 2: LEAVE REPORT
+    // ==========================================
+    html += `<div class="report-section-title bg-leave" style="margin-top:30px;">🔴 Leave Report</div>`;
+    if(!hasLeave) {
+      html += `<p style="text-align:center; color:#777;">No Leave data for this month.</p>`;
+    } else {
+      // Name-wise Leave
+      html += `<div class="report-sub-title">👤 Name-wise Leave</div>`;
+      html += `<table class="roster-list"><thead><tr><th>Name</th><th>Total Leaves</th><th>Dates</th></tr></thead><tbody>`;
+      for(const uName in leaveNameWise) {
+         if(leaveNameWise[uName].length > 0) {
+           html += `<tr><td><b>${uName}</b></td><td><b style="color:#E91E63;">${leaveNameWise[uName].length}</b></td><td>${leaveNameWise[uName].join(', ')}</td></tr>`;
+         }
+      }
+      html += `</tbody></table>`;
+
+      // Date-wise Leave
+      html += `<div class="report-sub-title">📅 Date-wise Leave</div>`;
+      html += `<table class="roster-list"><thead><tr><th>Date</th><th>Employees</th></tr></thead><tbody>`;
+      let sortedLeaveDates = Object.keys(leaveDateWise).sort((a,b) => parseInt(a) - parseInt(b));
+      for(const d of sortedLeaveDates) {
+         html += `<tr><td><b>${d} ${months[selMonth-1]}</b></td><td>${leaveDateWise[d].join(', ')}</td></tr>`;
+      }
+      html += `</tbody></table>`;
+    }
+    
+    resDiv.innerHTML = html;
+  }
+
+  window.downloadReport = function() {
+    if(Object.keys(customData).length === 0) { alert("No data to download!"); return; }
+    let csvContent = "data:text/csv;charset=utf-8,Date,Employee Name,Update Type,Point,Updated By\n"; 
+    for (const date in customData) {
+      for (const userName in customData[date]) {
+        const record = customData[date][userName];
+        csvContent += `${date},${userName},${record.type},${record.point ? record.point.toUpperCase() : "N/A"},${record.updatedBy}\n`;
+      }
+    }
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Group2_OT_Leave_Report.csv");
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
   }
 </script>
 </body>
