@@ -203,7 +203,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
   import { getFirestore, doc, setDoc, onSnapshot, collection, deleteField } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-  import { getAnalytics } from "firebase/analytics";
+  
   
  const firebaseConfig = {
     apiKey: "AIzaSyDLMx-d0NrIwuBgxvJiA-m8y9t7LBZibtg",
@@ -214,7 +214,6 @@
     appId: "1:305922970752:web:23e4569c1851e3169f0265"
   };
 
-  const analytics = getAnalytics(app);
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
