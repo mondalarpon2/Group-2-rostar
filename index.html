@@ -287,7 +287,8 @@
     if(!e || !p) return;
     btn.innerText = "Checking...";
     signInWithEmailAndPassword(auth, e, p).then(() => { btn.innerText = "Login to Roster"; err.style.display = 'none'; })
-    .catch(() => { btn.innerText = "Login to Roster"; err.style.display = 'block'; err.textContent = "Wrong Email or Password!"; });
+    .catch((error) => { btn.innerText = "Login to Roster"; err.style.display = 'block'; err.textContent = error.message; });
+   
   }
   window.logoutUser = () => signOut(auth);
 
