@@ -316,20 +316,25 @@
   }
   window.logoutUser = () => signOut(auth);
 
-    // --- ১. অফলাইন ব্যাকআপ সহ ফায়ারবেস ডেটা সিঙ্ক ---
+  // --- অফলাইন ও অনলাইনের জন্য পারফেক্ট ডেটা লোডিং সিস্টেম ---
   const savedOfflineData = localStorage.getItem('offline_custom_data');
   if (savedOfflineData) {
     customData = JSON.parse(savedOfflineData);
+    if(currentUser && isAppInitialized) window.updateView();
   }
 
   onSnapshot(collection(db, "daily_updates"), (snapshot) => {
-    customData = {};
-    snapshot.forEach((docSnap) => { customData[docSnap.id] = docSnap.data(); });
+    let freshData = {};
+    snapshot.forEach((docSnap) => { 
+      freshData[docSnap.id] = docSnap.data(); 
+    });
     
-    // ফায়ারবেসের লেটেস্ট ডেটা লোকাল স্টোরেজে সেভ করে রাখা যাতে অফলাইনেও ওটি/লিভ থাকে
-    localStorage.setItem('offline_custom_data', JSON.stringify(customData));
-    
-    if(currentUser && isAppInitialized) window.updateView();
+    // যদি ইন্টারনেট থাকে এবং ফায়ারবেস থেকে ডেটা আসে, তবেই সেটা আপডেট করব ও সেভ করব
+    if (Object.keys(freshData).length > 0) {
+      customData = freshData;
+      localStorage.setItem('offline_custom_data', JSON.stringify(customData));
+      if(currentUser && isAppInitialized) window.updateView();
+    }
   });
 
 
