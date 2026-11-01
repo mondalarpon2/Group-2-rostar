@@ -507,18 +507,38 @@
     document.getElementById('rosterModal').style.display = "block";
   }
 
-  window.saveDutyUpdate = async function() {
+    window.saveDutyUpdate = async function() {
     if(!ADMIN_EMAILS.includes(currentUser.email) && !USER_MAPPING[currentUser.email]) { alert("Access Denied! You are not authorized."); return; }
     const btn = document.getElementById('saveBtn'), uName = document.getElementById('editUserSelect').value, type = document.getElementById('editTypeSelect').value;
     const point = document.getElementById('editPointSelect').value, dateKey = `${todayDateForModal.getFullYear()}-${todayDateForModal.getMonth()+1}-${todayDateForModal.getDate()}`;
     const docRef = doc(db, "daily_updates", dateKey);
     btn.innerText = "Saving...";
     try {
-      if(type === 'Reset') await setDoc(docRef, { [uName]: deleteField() }, { merge: true });
-      else await setDoc(docRef, { [uName]: { type: type, point: type === 'OT' ? point : null, updatedBy: currentUser.email } }, { merge: true });
-      btn.innerText = "Saved!"; setTimeout(() => { window.closeRosterModal(); window.generateReport(); }, 1000);
+      if(type === 'Reset') {
+        await setDoc(docRef, { [uName]: deleteField() }, { merge: true });
+        if(customData[dateKey]) {
+          delete customData[dateKey][uName];
+          if(Object.keys(customData[dateKey]).length === 0) delete customData[dateKey];
+        }
+      } else {
+        const updateData = { type: type, point: type === 'OT' ? point : null, updatedBy: currentUser.email };
+        await setDoc(docRef, { [uName]: updateData }, { merge: true });
+        if(!customData[dateKey]) customData[dateKey] = {};
+        customData[dateKey][uName] = updateData;
+      }
+      
+      // সেভ করার সাথে সাথেই লোকাল স্টোরেজে ডেটা আপডেট করে রাখা
+      localStorage.setItem('offline_custom_data', JSON.stringify(customData));
+
+      btn.innerText = "Saved!"; 
+      setTimeout(() => { 
+        window.closeRosterModal(); 
+        window.generateReport(); 
+        window.updateView(); 
+      }, 1000);
     } catch(e) { alert("Error: " + e.message); btn.innerText = "Save Update"; }
-  }
+    }
+ 
 
   // --- DARK MODE TOGGLE ---
   window.toggleDarkMode = function() {
