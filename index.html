@@ -316,11 +316,22 @@
   }
   window.logoutUser = () => signOut(auth);
 
+    // --- ১. অফলাইন ব্যাকআপ সহ ফায়ারবেস ডেটা সিঙ্ক ---
+  const savedOfflineData = localStorage.getItem('offline_custom_data');
+  if (savedOfflineData) {
+    customData = JSON.parse(savedOfflineData);
+  }
+
   onSnapshot(collection(db, "daily_updates"), (snapshot) => {
     customData = {};
     snapshot.forEach((docSnap) => { customData[docSnap.id] = docSnap.data(); });
+    
+    // ফায়ারবেসের লেটেস্ট ডেটা লোকাল স্টোরেজে সেভ করে রাখা যাতে অফলাইনেও ওটি/লিভ থাকে
+    localStorage.setItem('offline_custom_data', JSON.stringify(customData));
+    
     if(currentUser && isAppInitialized) window.updateView();
   });
+
 
   // --- Initialize App ---
   function initializeAppUI() {
