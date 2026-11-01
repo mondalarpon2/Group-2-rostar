@@ -806,6 +806,33 @@
       navigator.serviceWorker.register('./sw.js');
     });
   }
+
+// রাইট ক্লিক বা কনটেক্সট মেনু বন্ধ করা
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// গুরুত্বপূর্ণ শর্টকাট কি (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J) ডিজেবল করা
+document.addEventListener('keydown', function(e) {
+  // F12 বন্ধ করা
+  if (e.key === 'F12') {
+    e.preventDefault();
+    return false;
+  }
+  
+  // Ctrl+Shift+I (Inspect) এবং Ctrl+Shift+J (Console) বন্ধ করা
+  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) {
+    e.preventDefault();
+    return false;
+  }
+  
+  // Ctrl+U (View Source) বন্ধ করা
+  if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+    e.preventDefault();
+    return false;
+  }
+});
+ 
+
+ 
 </script>
  
  
